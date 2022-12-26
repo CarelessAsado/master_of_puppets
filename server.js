@@ -1,55 +1,90 @@
-import axios from "axios";
-import fs from "fs";
+/* import puppeteer from "puppeteer"; */
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import { executablePath } from "puppeteer";
 
-let keepLooping = true;
-const final = [];
+puppeteer.use(StealthPlugin());
+import dotenv from "dotenv";
+dotenv.config();
 
-let url = "https://api.deezer.com/playlist/1993803246/tracks";
+(async () => {
+  const browser = await puppeteer.launch({
+    headless: false,
+    executablePath: executablePath(),
+    /* userDataDir: "C:Users\rodriAppDataLocalGoogleChromeUser Data", */
+  });
+  const page = await browser.newPage();
 
-const main = async () => {
-  if (readJson()?.length > 0) {
-    console.log("ABORTAMOS EL NODEMON REFRESH");
-    return;
-  }
-  async function doIT() {
-    try {
-      const { data: dataResp } = await axios.get(url);
-      dataResp.data.forEach((song) => {
-        const ALLINEED = song.title + " " + song.artist.name;
-        final.push(ALLINEED);
-      });
-      console.log("NEXT CALL: ", dataResp.next);
-      dataResp.next;
-      if (!dataResp.next) {
-        keepLooping = false;
-      }
-      url = dataResp.next;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  console.log("start");
-  while (keepLooping) {
-    await doIT();
-  }
+  await loginGoogle(page);
+
+  await page.screenshot({ path: "bla.jpg" });
+})();
+
+const EMAIL = process.env.EMAIL;
+
+const loginGoogle = async (page) => {
+  const navigationPromise = page.waitForNavigation();
+
+  await page.goto("https://accounts.google.com/");
+
+  await navigationPromise;
+
+  await page.waitForSelector('input[type="email"]');
+  await page.click('input[type="email"]');
+
+  await navigationPromise;
+
+  //TODO : change to your email
+  await page.type('input[type="email"]', EMAIL);
+
+  await page.waitForSelector("#identifierNext");
+  await page.click("#identifierNext");
+
+  await page.waitForTimeout(500);
+
+  /*   await page.waitForSelector('input[type="password"]');
+  await page.click('input[type="email"]');
+  await page.waitFor(500);
+
+  //TODO : change to your password
+  await page.type('input[type="password"]', "yourpassword"); */
 };
 
-main().then(async () => {
-  if (readJson()?.length > 0) {
-    console.log("ABORTAMOS EL NODEMON REFRESH");
+const later = async () => {
+  const query = "Sheeran";
+
+  await page.goto(`https://www.youtube.com/results?search_query=${query}`);
+  await page.screenshot({ path: "bla.jpg" });
+  await page.waitForSelector("#contents");
+  await page.screenshot({ path: "bla.jpg" });
+  const wrapper = await page.$("ytd-search-pyv-renderer");
+  // Type into search box.
+  /*  await page.type(".ytd-searchbox", "sheeran"); */
+
+  // Wait for suggest overlay to appear and click "show all results".
+  /*   const allResultsSelector = ".devsite-suggest-all-results";
+  await page.waitForSelector(allResultsSelector);
+  await page.click("#search-icon-legacy"); */
+
+  // Wait for the results page to load and display the results.
+  /*   const resultsSelector = ".gsc-results .gs-title";
+  await page.waitForSelector(resultsSelector); */
+
+  // Extract the results from the page.
+  /*   const links = await page.evaluate((resultsSelector) => {
+    return [...document.querySelectorAll(resultsSelector)].map((anchor) => {
+      const title = anchor.textContent.split("|")[0].trim();
+      return `${title} - ${anchor.href}`;
+    });
+  }, resultsSelector); */
+  if (!wrapper) {
     return;
   }
-  try {
-    fs.writeFileSync("test.json", JSON.stringify(final));
-    readJson();
-  } catch (err) {
-    console.error(err);
-  }
-});
+  console.log(wrapper);
+  await wrapper.click();
+  await page.screenshot({ path: "result.jpg" });
+  // Print all the files.
+  /*   console.log(links.join("\n")); */
 
-function readJson() {
-  let rawdata = fs.readFileSync("test.json");
-
-  let array = JSON.parse(rawdata);
-  return array;
-}
+  /*   await browser.close(); */
+};
