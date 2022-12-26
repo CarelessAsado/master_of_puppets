@@ -14,15 +14,4 @@ auth:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjQ0YjIxYWVlMzc3MGVjNTVhMT
 
 
 
-curl -X POST \
--H "Content-Type: application/json" \
--H 'Authorization: Bearer TEST-5077243686415755-032403-61ebbbdf2faee1372e35bad638251f8b-1095120922' \
-"https://api.mercadopago.com/users/test_user" \
--d '{"site_id":"MLA"}'
-
-//24/8/22
-//este metodo ya no sirve + me parece, ahora se genera en DevSite, con tu cuenta de MP
-//ver este link:
-//https://www.mercadopago.com.ar/developers/en/docs/subscriptions/integration-test/create-test-user.
-
 
