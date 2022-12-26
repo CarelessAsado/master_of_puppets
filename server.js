@@ -17,7 +17,7 @@ dotenv.config();
   const page = await browser.newPage();
 
   await loginGoogle(page);
-
+  await later(page);
   await page.screenshot({ path: "bla.jpg" });
 })();
 
@@ -31,33 +31,35 @@ const loginGoogle = async (page) => {
   await navigationPromise;
 
   await page.waitForSelector('input[type="email"]');
-  await page.click('input[type="email"]');
-
-  await navigationPromise;
+  /*  await page.click('input[type="email"]'); 
+   await navigationPromise; */
 
   //TODO : change to your email
   await page.type('input[type="email"]', EMAIL);
 
   await page.waitForSelector("#identifierNext");
+
   await page.click("#identifierNext");
 
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(3500);
 
-  /*   await page.waitForSelector('input[type="password"]');
-  await page.click('input[type="email"]');
-  await page.waitFor(500);
+  await page.waitForSelector('input[type="password"]');
+  await page.screenshot({ path: "bla.jpg" });
+  await page.type('input[type="password"]', process.env.PWD);
 
-  //TODO : change to your password
-  await page.type('input[type="password"]', "yourpassword"); */
+  await page.waitForSelector("#passwordNext");
+  await page.click("#passwordNext");
+
+  await navigationPromise;
 };
 
-const later = async () => {
+const later = async (page) => {
   const query = "Sheeran";
 
   await page.goto(`https://www.youtube.com/results?search_query=${query}`);
   await page.screenshot({ path: "bla.jpg" });
   await page.waitForSelector("#contents");
-  await page.screenshot({ path: "bla.jpg" });
+  /*   await page.screenshot({ path: "bla.jpg" }); */
   const wrapper = await page.$("ytd-search-pyv-renderer");
   // Type into search box.
   /*  await page.type(".ytd-searchbox", "sheeran"); */
