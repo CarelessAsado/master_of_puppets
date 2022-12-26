@@ -10,8 +10,9 @@ dotenv.config();
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
+
+    //https://stackoverflow.com/questions/74251875/puppeteer-error-an-executablepath-or-channel-must-be-specified-for-puppete
     executablePath: executablePath(),
-    /* userDataDir: "C:Users\rodriAppDataLocalGoogleChromeUser Data", */
   });
   const page = await browser.newPage();
 
