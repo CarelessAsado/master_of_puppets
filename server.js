@@ -25,8 +25,10 @@ const EMAIL = process.env.EMAIL;
 
 const loginGoogle = async (page) => {
   const navigationPromise = page.waitForNavigation();
-
-  await page.goto("https://accounts.google.com/");
+  const pureUrl = "https://accounts.google.com/";
+  let string =
+    "https://accounts.google.com/v3/signin/identifier?dsh=S-503134912%3A1672089487478862&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&ec=65620&hl=en&passive=true&service=youtube&uilel=3&flowName=GlifWebSignIn&flowEntry=ServiceLogin&ifkv=AeAAQh6_jqjPaB4zQ9pfTixvDvh8DLv-qiPTEbVIQwLx-WbuwrxAYAik-qMvsNlYDFa0w4daiOwr5Q";
+  await page.goto(string);
 
   await navigationPromise;
 
@@ -49,7 +51,7 @@ const loginGoogle = async (page) => {
 
   await page.waitForSelector("#passwordNext");
   await page.click("#passwordNext");
-
+  await page.waitForTimeout(3500);
   await navigationPromise;
 };
 
@@ -83,7 +85,7 @@ const later = async (page) => {
   if (!wrapper) {
     return;
   }
-  console.log(wrapper);
+  console.log(wrapper.length);
   await wrapper.click();
   await page.screenshot({ path: "result.jpg" });
   // Print all the files.
