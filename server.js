@@ -18,6 +18,7 @@ dotenv.config();
 
   await loginGoogle(page);
   await later(page);
+  /* await test(page); */
   await page.screenshot({ path: "bla.jpg" });
 })();
 
@@ -43,9 +44,11 @@ const loginGoogle = async (page) => {
 
   await page.click("#identifierNext");
 
-  await page.waitForTimeout(3500);
+  await page.waitForTimeout(5500);
 
   await page.waitForSelector('input[type="password"]');
+  await page.click('input[type="password"]');
+  await navigationPromise;
   await page.screenshot({ path: "bla.jpg" });
   await page.type('input[type="password"]', process.env.PWD);
 
@@ -55,14 +58,40 @@ const loginGoogle = async (page) => {
   await navigationPromise;
 };
 
+const test = async (page) => {
+  await page.goto(`https://www.youtube.com/watch?v=2Vv-BfVoq4g`);
+
+  await page.waitForSelector("#button-shape");
+  await page.screenshot({ path: "new.jpg" });
+  const btnSelector = "yt-button-shape#button-shape";
+  //NO ANDA "yt-button-shape#button-shape";
+  //NO ANDA"div.yt-spec-touch-feedback-shape__fill";
+  //NO ANDA"yt-touch-feedback-shape";
+  //anda pero depende del language fr x ej autres actions
+  //const btnSelector =    ".yt-spec-button-shape-next--icon-button[aria-label='More actions']";
+
+  await page.evaluate((btnSelector) => {
+    // this executes in the page
+    const obj = document.querySelector(btnSelector);
+    console.log(obj, 666);
+    obj.click();
+  }, btnSelector);
+  //este anda en test pero no cuando hago todo el camino de reloads
+  /*  await page.click("#button-shape"); */
+};
+
 const later = async (page) => {
   const query = "Sheeran";
-
-  await page.goto(`https://www.youtube.com/results?search_query=${query}`);
+  //www.youtube.com/watch?v=2Vv-BfVoq4g
+  https: await page.goto(
+    `https://www.youtube.com/results?search_query=${query}`
+  );
   await page.screenshot({ path: "bla.jpg" });
   await page.waitForSelector("#contents");
   /*   await page.screenshot({ path: "bla.jpg" }); */
-  const wrapper = await page.$("ytd-search-pyv-renderer");
+  //ytd-thumbnail este elije publics, y radio (playlists)
+  const resultsSelector = "ytd-video-renderer ytd-thumbnail";
+  const wrapper = await page.$$(resultsSelector);
   // Type into search box.
   /*  await page.type(".ytd-searchbox", "sheeran"); */
 
@@ -73,7 +102,8 @@ const later = async (page) => {
 
   // Wait for the results page to load and display the results.
   /*   const resultsSelector = ".gsc-results .gs-title";
-  await page.waitForSelector(resultsSelector); */
+  await page.waitForSelector("#button-shape");
+    await page.click("#search-icon-legacy"); */
 
   // Extract the results from the page.
   /*   const links = await page.evaluate((resultsSelector) => {
@@ -86,8 +116,36 @@ const later = async (page) => {
     return;
   }
   console.log(wrapper.length);
-  await wrapper.click();
-  await page.screenshot({ path: "result.jpg" });
+  if (wrapper.length > 2) {
+    await page.evaluate((resultsSelector) => {
+      return [...document.querySelectorAll(resultsSelector)].map((anchor) => {
+        console.log(anchor);
+        /*  const title = anchor.textContent.split("|")[0].trim();
+        return `${title} - ${anchor.href}`; */
+      });
+    }, resultsSelector);
+
+    console.log(wrapper[1]);
+    await wrapper[0].click();
+    await page.waitForSelector("#button-shape");
+
+    await page.waitForTimeout(5500);
+    await page.screenshot({ path: "new.jpg" });
+
+    const btnSelector =
+      ".yt-spec-button-shape-next--icon-button[aria-label='Autres actions']";
+    await page.evaluate((btnSelector) => {
+      // this executes in the page
+      document.querySelector(btnSelector).click();
+    }, btnSelector);
+
+    //UNA VEZ ABIERTO EL MODAL
+    //ytd-playlist-add-to-option-renderer >( tp-yt-paper-checkbox Q TIENE ID= checkbox)
+    //como saber cual de todas las opciones del popup??
+    /*
+    yt-formatted-string Q TIENE id="label" Y Q tiene title="MÚSICA" */
+  }
+
   // Print all the files.
   /*   console.log(links.join("\n")); */
 
