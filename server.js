@@ -78,6 +78,7 @@ const test = async (page) => {
   }, btnSelector);
   //este anda en test pero no cuando hago todo el camino de reloads
   /*  await page.click("#button-shape"); */
+  //por otro lado, el page.evaluate no anda cuando uso #button-shape XD, solo me registra el click event cuando uso otro html element
 };
 
 const later = async (page) => {
@@ -127,13 +128,11 @@ const later = async (page) => {
 
     console.log(wrapper[1]);
     await wrapper[0].click();
-    await page.waitForSelector("#button-shape");
-
-    await page.waitForTimeout(5500);
-    await page.screenshot({ path: "new.jpg" });
 
     const btnSelector =
-      ".yt-spec-button-shape-next--icon-button[aria-label='Autres actions']";
+      "button.yt-spec-button-shape-next--icon-button[aria-label='Autres actions']";
+
+    await page.waitForSelector(btnSelector);
     await page.evaluate((btnSelector) => {
       // this executes in the page
       document.querySelector(btnSelector).click();
