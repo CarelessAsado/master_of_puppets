@@ -17,8 +17,15 @@ dotenv.config();
   const page = await browser.newPage();
 
   await loginGoogle(page);
-  await later(page);
-  /* await test(page); */
+
+  const fakeData = ["Sheeran", "John Mayer"];
+
+  for (const query of fakeData) {
+    await later(page, query);
+  }
+
+  /*   await later(page); */
+  /*   await test(page); */
   await page.screenshot({ path: "bla.jpg" });
 })();
 
@@ -76,13 +83,29 @@ const test = async (page) => {
     console.log(obj, 666);
     obj.click();
   }, btnSelector);
+
+  await page.evaluate(() => {
+    const enregistrerOption = document.querySelector(
+      document.querySelector(
+        "#items > ytd-menu-service-item-renderer:nth-child(3) > tp-yt-paper-item > yt-formatted-string"
+      )
+    );
+    enregistrerOption.click();
+  });
+
+  //con esto checkeo el CBOX y ya puedo hacer page refresh p/seguir
+  await page.evaluate(() => {
+    const cbox = document.querySelector("#label[aria-label='MÚSICA Privée']");
+    cbox.click();
+    console.log(cbox, 666);
+  });
   //este anda en test pero no cuando hago todo el camino de reloads
   /*  await page.click("#button-shape"); */
   //por otro lado, el page.evaluate no anda cuando uso #button-shape XD, solo me registra el click event cuando uso otro html element
 };
 
-const later = async (page) => {
-  const query = "Sheeran";
+const later = async (page, query) => {
+  /*  const query = "Sheeran"; */
   //www.youtube.com/watch?v=2Vv-BfVoq4g
   https: await page.goto(
     `https://www.youtube.com/results?search_query=${query}`
@@ -135,8 +158,30 @@ const later = async (page) => {
     await page.waitForSelector(btnSelector);
     await page.evaluate((btnSelector) => {
       // this executes in the page
+      const cbox = document.getElementById("checkboxContainer");
+      console.log(cbox);
       document.querySelector(btnSelector).click();
     }, btnSelector);
+
+    await page.screenshot({ path: "enregistrer.jpg" });
+
+    await page.evaluate(() => {
+      const enregistrerOption = document.querySelector(
+        "#items > ytd-menu-service-item-renderer:nth-child(3) > tp-yt-paper-item > yt-formatted-string"
+      );
+      console.log(enregistrerOption.textContent, 999);
+      enregistrerOption.click();
+    });
+
+    await page.screenshot({ path: "checkbox.jpg" });
+
+    await page.waitForSelector("#label[title='MÚSICA']");
+    //con esto checkeo el CBOX y ya puedo hacer page refresh p/seguir
+    await page.evaluate(() => {
+      const cbox = document.querySelector("#label[title='MÚSICA']");
+      cbox.click();
+      console.log(cbox, 666);
+    });
 
     //UNA VEZ ABIERTO EL MODAL
     //ytd-playlist-add-to-option-renderer >( tp-yt-paper-checkbox Q TIENE ID= checkbox)
