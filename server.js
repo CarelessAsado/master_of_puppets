@@ -138,7 +138,7 @@ const later = async (page, query) => {
 
   await page.waitForSelector("#contents");
 
-  console.log(query);
+  console.log("NOW: " + query);
   //ytd-thumbnail, con ese html element evito agarra publicidades y playlists(q llevan el HTML element radio renderer)
   const resultsSelector = "ytd-video-renderer ytd-thumbnail";
   const wrapper = await page.$$(resultsSelector);
@@ -147,7 +147,7 @@ const later = async (page, query) => {
     return;
   }
 
-  if (wrapper.length > 2) {
+  if (wrapper.length > 0) {
     //clickeamos el 1er resultado de la busqueda
     await wrapper[0].click();
 
@@ -182,7 +182,9 @@ const later = async (page, query) => {
     /*  PLAYLIST MUSICA / CBOX */
     await page.waitForSelector("#label[title='MÚSICA']");
 
-    await page.evaluate(() => {
+    //todo lo q hagas referencia en evaluate es como si estuvieras adentro del browser, si necesitas una variable, la podés pasar como 2do arg al method "evaluate"
+    let saved = false;
+    await page.evaluate((saved) => {
       //agarro el label q pertenecer a la playlist MUSICA
       const cbox = document.querySelector("#label[title='MÚSICA']");
 
@@ -191,7 +193,12 @@ const later = async (page, query) => {
         cbox?.parentNode?.parentNode?.parentNode?.parentNode?.checked === false
       ) {
         cbox.click();
+        saved = true;
       }
-    });
+    }, saved);
+
+    saved
+      ? console.log("Guardamos")
+      : console.log(`Esta canción: '${query}' ya estaba en tu playlist`);
   }
 };
