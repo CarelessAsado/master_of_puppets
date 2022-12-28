@@ -2,8 +2,6 @@
 ### https://api.deezer.com/playlist/1993803246/tracks
 ### https://api.deezer.com/user/1045816946/playlists
 GET  {{url}}
-auth:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjQ0YjIxYWVlMzc3MGVjNTVhMTdjOGYiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjUwMzA0ODE5LCJleHAiOjE2NTAzMTIwMTl9.qUe3Bz6R8Ohjy0MN84CabGuoF4Ta6ckUKda6Hts6MwY
-###
 
 
 
