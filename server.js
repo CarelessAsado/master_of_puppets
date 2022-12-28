@@ -38,12 +38,14 @@ const PASSWORD = process.env.PWD;
   }
   //TESTING, lo usé p/evitar el login a veces
   /*   await test(page); */
-  await page.screenshot({ path: "bla.jpg" });
+
+  //si queres cerrar el proceso al final, prefiero dejar el browser abierto en caso de error
+  /*  await browser.close();  */
 })();
 
 const loginGoogle = async (page) => {
   const navigationPromise = page.waitForNavigation();
-  const pureUrl = "https://accounts.google.com/";
+
   let string =
     "https://accounts.google.com/v3/signin/identifier?dsh=S-503134912%3A1672089487478862&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252F&ec=65620&hl=en&passive=true&service=youtube&uilel=3&flowName=GlifWebSignIn&flowEntry=ServiceLogin&ifkv=AeAAQh6_jqjPaB4zQ9pfTixvDvh8DLv-qiPTEbVIQwLx-WbuwrxAYAik-qMvsNlYDFa0w4daiOwr5Q";
   await page.goto(string);
@@ -54,7 +56,6 @@ const loginGoogle = async (page) => {
   /*  await page.click('input[type="email"]'); 
    await navigationPromise; */
 
-  //TODO : change to your email
   await page.type('input[type="email"]', EMAIL);
 
   await page.waitForSelector("#identifierNext");
@@ -137,6 +138,7 @@ const later = async (page, query) => {
 
   await page.waitForSelector("#contents");
 
+  console.log(query);
   //ytd-thumbnail, con ese html element evito agarra publicidades y playlists(q llevan el HTML element radio renderer)
   const resultsSelector = "ytd-video-renderer ytd-thumbnail";
   const wrapper = await page.$$(resultsSelector);
@@ -144,7 +146,7 @@ const later = async (page, query) => {
   if (!wrapper) {
     return;
   }
-  console.log(wrapper.length);
+
   if (wrapper.length > 2) {
     //clickeamos el 1er resultado de la busqueda
     await wrapper[0].click();
@@ -192,14 +194,5 @@ const later = async (page, query) => {
         console.log(cbox, 666);
       }
     });
-
-    //UNA VEZ ABIERTO EL MODAL
-    //ytd-playlist-add-to-option-renderer >( tp-yt-paper-checkbox Q TIENE ID= checkbox)
-    //como saber cual de todas las opciones del popup??
   }
-
-  // Print all the files.
-  /*   console.log(links.join("\n")); */
-
-  /*   await browser.close(); */
 };
