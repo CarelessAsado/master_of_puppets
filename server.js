@@ -208,9 +208,14 @@ const later = async (page, query) => {
     await page.waitForSelector("#label[title='MÚSICA']");
     //con esto checkeo el CBOX y ya puedo hacer page refresh p/seguir
     await page.evaluate(() => {
+      //const cbox = document.querySelector("#checkbox[checked]")
       const cbox = document.querySelector("#label[title='MÚSICA']");
-      cbox.click();
-      console.log(cbox, 666);
+      if (
+        cbox?.parentNode?.parentNode?.parentNode?.parentNode?.checked === false
+      ) {
+        cbox.click();
+        console.log(cbox, 666);
+      }
     });
 
     //UNA VEZ ABIERTO EL MODAL
