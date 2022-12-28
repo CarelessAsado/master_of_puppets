@@ -183,8 +183,7 @@ const later = async (page, query) => {
     await page.waitForSelector("#label[title='MÚSICA']");
 
     //todo lo q hagas referencia en evaluate es como si estuvieras adentro del browser, si necesitas una variable, la podés pasar como 2do arg al method "evaluate"
-    let saved = false;
-    await page.evaluate((saved) => {
+    await page.evaluate(() => {
       //agarro el label q pertenecer a la playlist MUSICA
       const cbox = document.querySelector("#label[title='MÚSICA']");
 
@@ -193,12 +192,7 @@ const later = async (page, query) => {
         cbox?.parentNode?.parentNode?.parentNode?.parentNode?.checked === false
       ) {
         cbox.click();
-        saved = true;
       }
-    }, saved);
-
-    saved
-      ? console.log("Guardamos")
-      : console.log(`Esta canción: '${query}' ya estaba en tu playlist`);
+    });
   }
 };
