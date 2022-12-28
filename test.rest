@@ -4,13 +4,6 @@
 GET  {{url}}
 auth:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjQ0YjIxYWVlMzc3MGVjNTVhMTdjOGYiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjUwMzA0ODE5LCJleHAiOjE2NTAzMTIwMTl9.qUe3Bz6R8Ohjy0MN84CabGuoF4Ta6ckUKda6Hts6MwY
 ###
-POST   {{url}}
-content-type: application/json  
-auth:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjQ0YjIxYWVlMzc3MGVjNTVhMTdjOGYiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjUwMDQ3NDM5LCJleHAiOjE2NTAwNTQ2Mzl9.VDh-4We-v5IXmYxQvIZc8-tQqjM1h_hEgCcU13zfPHw
-
-{"marcas":[  "Paco Rabanne",
-]}
-###
 
 
 
