@@ -132,9 +132,9 @@ const later = async (page, query) => {
   https: await page.goto(
     `https://www.youtube.com/results?search_query=${query}`
   );
-  await page.screenshot({ path: "bla.jpg" });
+
   await page.waitForSelector("#contents");
-  /*   await page.screenshot({ path: "bla.jpg" }); */
+
   //ytd-thumbnail este elije publics, y radio (playlists)
   const resultsSelector = "ytd-video-renderer ytd-thumbnail";
   const wrapper = await page.$$(resultsSelector);
@@ -183,8 +183,6 @@ const later = async (page, query) => {
       document.querySelector(btnSelector).click();
     }, btnSelector);
 
-    await page.screenshot({ path: "enregistrer.jpg" });
-
     //REEMPLAZAR ACA
 
     await page.evaluate(() => {
@@ -205,7 +203,7 @@ const later = async (page, query) => {
       }
     });
 
-    await page.screenshot({ path: "checkbox.jpg" });
+    /*    await page.screenshot({ path: "checkbox.jpg" }); */
 
     await page.waitForSelector("#label[title='MÚSICA']");
     //con esto checkeo el CBOX y ya puedo hacer page refresh p/seguir
