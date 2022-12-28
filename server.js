@@ -5,7 +5,10 @@ import { executablePath } from "puppeteer";
 
 puppeteer.use(StealthPlugin());
 import dotenv from "dotenv";
+import { readJson } from "./deezer.js";
 dotenv.config();
+
+const songsData = readJson();
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -15,17 +18,18 @@ dotenv.config();
     executablePath: executablePath(),
   });
   const page = await browser.newPage();
-
-  await loginGoogle(page);
-
-  const fakeData = ["Sheeran", "John Mayer"];
-
-  for (const query of fakeData) {
-    await later(page, query);
+  if (songsData.length > 0) {
+    console.log("ok");
+  } else {
+    return;
   }
+  await loginGoogle(page);
+  /* 
+  for (const query of songsData) {
+    await later(page, query);
+  }  */
 
-  /*   await later(page); */
-  /*   await test(page); */
+  await test(page);
   await page.screenshot({ path: "bla.jpg" });
 })();
 
@@ -70,35 +74,53 @@ const test = async (page) => {
 
   await page.waitForSelector("#button-shape");
   await page.screenshot({ path: "new.jpg" });
-  const btnSelector = "yt-button-shape#button-shape";
+
   //NO ANDA "yt-button-shape#button-shape";
   //NO ANDA"div.yt-spec-touch-feedback-shape__fill";
   //NO ANDA"yt-touch-feedback-shape";
   //anda pero depende del language fr x ej autres actions
   //const btnSelector =    ".yt-spec-button-shape-next--icon-button[aria-label='More actions']";
-
-  await page.evaluate((btnSelector) => {
+  // ANDABA PERO DEJO DE ANDAR el btnSelector y la evaluate fn
+  /*  const btnSelector = "yt-button-shape#button-shape"; */
+  /*  await page.evaluate((btnSelector) => {
     // this executes in the page
     const obj = document.querySelector(btnSelector);
     console.log(obj, 666);
     obj.click();
+  }, btnSelector); */
+  const btnSelector =
+    "button.yt-spec-button-shape-next--icon-button[aria-label='Autres actions']";
+
+  await page.waitForSelector(btnSelector);
+  await page.evaluate((btnSelector) => {
+    // this executes in the page
+    document.querySelector(btnSelector).click();
   }, btnSelector);
 
   await page.evaluate(() => {
-    const enregistrerOption = document.querySelector(
-      document.querySelector(
-        "#items > ytd-menu-service-item-renderer:nth-child(3) > tp-yt-paper-item > yt-formatted-string"
-      )
-    );
-    enregistrerOption.click();
+    let stopLoop = false;
+    let num = 0;
+
+    while (!stopLoop) {
+      const enregistrerOption = document.querySelector(
+        `#items > ytd-menu-service-item-renderer:nth-child(${num}) > tp-yt-paper-item > yt-formatted-string`
+      );
+
+      if (enregistrerOption?.textContent === "Enregistrer") {
+        enregistrerOption.click();
+        stopLoop = true;
+      } else {
+        num = num + 1;
+      }
+    }
   });
 
   //con esto checkeo el CBOX y ya puedo hacer page refresh p/seguir
-  await page.evaluate(() => {
+  /*  await page.evaluate(() => {
     const cbox = document.querySelector("#label[aria-label='MÚSICA Privée']");
     cbox.click();
     console.log(cbox, 666);
-  });
+  }); */
   //este anda en test pero no cuando hago todo el camino de reloads
   /*  await page.click("#button-shape"); */
   //por otro lado, el page.evaluate no anda cuando uso #button-shape XD, solo me registra el click event cuando uso otro html element
@@ -158,19 +180,29 @@ const later = async (page, query) => {
     await page.waitForSelector(btnSelector);
     await page.evaluate((btnSelector) => {
       // this executes in the page
-      const cbox = document.getElementById("checkboxContainer");
-      console.log(cbox);
       document.querySelector(btnSelector).click();
     }, btnSelector);
 
     await page.screenshot({ path: "enregistrer.jpg" });
 
+    //REEMPLAZAR ACA
+
     await page.evaluate(() => {
-      const enregistrerOption = document.querySelector(
-        "#items > ytd-menu-service-item-renderer:nth-child(3) > tp-yt-paper-item > yt-formatted-string"
-      );
-      console.log(enregistrerOption.textContent, 999);
-      enregistrerOption.click();
+      let stopLoop = false;
+      let num = 0;
+
+      while (!stopLoop) {
+        const enregistrerOption = document.querySelector(
+          `#items > ytd-menu-service-item-renderer:nth-child(${num}) > tp-yt-paper-item > yt-formatted-string`
+        );
+
+        if (enregistrerOption?.textContent === "Enregistrer") {
+          enregistrerOption.click();
+          stopLoop = true;
+        } else {
+          num = num + 1;
+        }
+      }
     });
 
     await page.screenshot({ path: "checkbox.jpg" });
