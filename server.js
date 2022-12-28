@@ -5,12 +5,17 @@ import { executablePath } from "puppeteer";
 
 puppeteer.use(StealthPlugin());
 import dotenv from "dotenv";
-import { readJson } from "./deezer.js";
+import { mainDeezer, readJson } from "./deezer.js";
 dotenv.config();
 
-const songsData = readJson();
+const EMAIL = process.env.EMAIL;
+const PASSWORD = process.env.PWD;
 
 (async () => {
+  await mainDeezer();
+
+  const songsData = readJson();
+
   const browser = await puppeteer.launch({
     headless: false,
 
@@ -19,8 +24,11 @@ const songsData = readJson();
   });
   const page = await browser.newPage();
   if (songsData.length > 0) {
-    console.log("ok");
+    console.log(
+      "ok, hay canciones en el JSON FILE, asi q arrancamos el chrome bot"
+    );
   } else {
+    console.log("NO DATA TO UPLOAD TO YOUTUBE");
     return;
   }
   await loginGoogle(page);
@@ -28,12 +36,10 @@ const songsData = readJson();
   for (const query of songsData) {
     await later(page, query);
   }
-
+  //TESTING, lo usé p/evitar el login a veces
   /*   await test(page); */
   await page.screenshot({ path: "bla.jpg" });
 })();
-
-const EMAIL = process.env.EMAIL;
 
 const loginGoogle = async (page) => {
   const navigationPromise = page.waitForNavigation();
@@ -61,7 +67,7 @@ const loginGoogle = async (page) => {
   await page.click('input[type="password"]');
   await navigationPromise;
   await page.screenshot({ path: "bla.jpg" });
-  await page.type('input[type="password"]', process.env.PWD);
+  await page.type('input[type="password"]', PASSWORD);
 
   await page.waitForSelector("#passwordNext");
   await page.click("#passwordNext");
@@ -127,51 +133,20 @@ const test = async (page) => {
 };
 
 const later = async (page, query) => {
-  /*  const query = "Sheeran"; */
-  //www.youtube.com/watch?v=2Vv-BfVoq4g
-  https: await page.goto(
-    `https://www.youtube.com/results?search_query=${query}`
-  );
+  await page.goto(`https://www.youtube.com/results?search_query=${query}`);
 
   await page.waitForSelector("#contents");
 
-  //ytd-thumbnail este elije publics, y radio (playlists)
+  //ytd-thumbnail, con ese html element evito agarra publicidades y playlists(q llevan el HTML element radio renderer)
   const resultsSelector = "ytd-video-renderer ytd-thumbnail";
   const wrapper = await page.$$(resultsSelector);
-  // Type into search box.
-  /*  await page.type(".ytd-searchbox", "sheeran"); */
 
-  // Wait for suggest overlay to appear and click "show all results".
-  /*   const allResultsSelector = ".devsite-suggest-all-results";
-  await page.waitForSelector(allResultsSelector);
-  await page.click("#search-icon-legacy"); */
-
-  // Wait for the results page to load and display the results.
-  /*   const resultsSelector = ".gsc-results .gs-title";
-  await page.waitForSelector("#button-shape");
-    await page.click("#search-icon-legacy"); */
-
-  // Extract the results from the page.
-  /*   const links = await page.evaluate((resultsSelector) => {
-    return [...document.querySelectorAll(resultsSelector)].map((anchor) => {
-      const title = anchor.textContent.split("|")[0].trim();
-      return `${title} - ${anchor.href}`;
-    });
-  }, resultsSelector); */
   if (!wrapper) {
     return;
   }
   console.log(wrapper.length);
   if (wrapper.length > 2) {
-    await page.evaluate((resultsSelector) => {
-      return [...document.querySelectorAll(resultsSelector)].map((anchor) => {
-        console.log(anchor);
-        /*  const title = anchor.textContent.split("|")[0].trim();
-        return `${title} - ${anchor.href}`; */
-      });
-    }, resultsSelector);
-
-    console.log(wrapper[1]);
+    //clickeamos el 1er resultado de la busqueda
     await wrapper[0].click();
 
     const btnSelector =
@@ -179,16 +154,13 @@ const later = async (page, query) => {
 
     await page.waitForSelector(btnSelector);
     await page.evaluate((btnSelector) => {
-      // this executes in the page
       document.querySelector(btnSelector).click();
     }, btnSelector);
-
-    //REEMPLAZAR ACA
 
     await page.evaluate(() => {
       let stopLoop = false;
       let num = 0;
-
+      //loopeo todas las opcion y busco la q sea GUARDAR (esta es la mejor manera q encontré p/hacerlo dinamicamente, xq el orden de las options cambia a veces)
       while (!stopLoop) {
         const enregistrerOption = document.querySelector(
           `#items > ytd-menu-service-item-renderer:nth-child(${num}) > tp-yt-paper-item > yt-formatted-string`
@@ -205,12 +177,14 @@ const later = async (page, query) => {
 
     /*    await page.screenshot({ path: "checkbox.jpg" }); */
 
-    /*    yt-formatted-string Q TIENE id="label" Y Q tiene title="MÚSICA" */
+    /*  PLAYLIST MUSICA / CBOX */
     await page.waitForSelector("#label[title='MÚSICA']");
-    //con esto checkeo el CBOX y ya puedo hacer page refresh p/seguir
+
     await page.evaluate(() => {
-      //const cbox = document.querySelector("#checkbox[checked]")
+      //agarro el label q pertenecer a la playlist MUSICA
       const cbox = document.querySelector("#label[title='MÚSICA']");
+
+      //chequeo q esa cancion no esté ya incluida en la playlist
       if (
         cbox?.parentNode?.parentNode?.parentNode?.parentNode?.checked === false
       ) {

@@ -3,12 +3,16 @@ import fs from "fs";
 
 let keepLooping = true;
 const final = [];
+const FILE_DEEZER_SONGS_NAME = "test.json";
 
 let url = "https://api.deezer.com/playlist/1993803246/tracks";
 
-const main = async () => {
+export const mainDeezer = async () => {
+  //nodemon reiniciaba c/vez q hacia un writeFile
   if (readJson()?.length > 0) {
-    console.log("ABORTAMOS EL NODEMON REFRESH");
+    console.log(
+      "ya hay canciones en el json, ABORTAMOS EL NODEMON REFRESH, y la busqueda en deezer"
+    );
     return;
   }
   async function getDeezerData() {
@@ -28,27 +32,21 @@ const main = async () => {
       console.log(error);
     }
   }
-  console.log("start");
+  console.log("start FETCHING FROM DEEZER API");
   while (keepLooping) {
     await getDeezerData();
   }
-};
 
-main().then(async () => {
-  if (readJson()?.length > 0) {
-    console.log("ABORTAMOS EL NODEMON REFRESH");
-    return;
-  }
+  //save all songs in test.json FILE
   try {
-    fs.writeFileSync("test.json", JSON.stringify(final));
-    readJson();
+    fs.writeFileSync(FILE_DEEZER_SONGS_NAME, JSON.stringify(final));
   } catch (err) {
     console.error(err);
   }
-});
+};
 
 export function readJson() {
-  let rawdata = fs.readFileSync("test.json");
+  let rawdata = fs.readFileSync(FILE_DEEZER_SONGS_NAME);
 
   let array = JSON.parse(rawdata);
   return array;
