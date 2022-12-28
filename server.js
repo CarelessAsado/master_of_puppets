@@ -205,6 +205,7 @@ const later = async (page, query) => {
 
     /*    await page.screenshot({ path: "checkbox.jpg" }); */
 
+    /*    yt-formatted-string Q TIENE id="label" Y Q tiene title="MÚSICA" */
     await page.waitForSelector("#label[title='MÚSICA']");
     //con esto checkeo el CBOX y ya puedo hacer page refresh p/seguir
     await page.evaluate(() => {
@@ -221,8 +222,6 @@ const later = async (page, query) => {
     //UNA VEZ ABIERTO EL MODAL
     //ytd-playlist-add-to-option-renderer >( tp-yt-paper-checkbox Q TIENE ID= checkbox)
     //como saber cual de todas las opciones del popup??
-    /*
-    yt-formatted-string Q TIENE id="label" Y Q tiene title="MÚSICA" */
   }
 
   // Print all the files.
