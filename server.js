@@ -191,7 +191,6 @@ const later = async (page, query) => {
         cbox?.parentNode?.parentNode?.parentNode?.parentNode?.checked === false
       ) {
         cbox.click();
-        console.log(cbox, 666);
       }
     });
   }
