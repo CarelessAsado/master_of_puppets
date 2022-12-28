@@ -21,7 +21,9 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/.jpg
 .jpg
+*.jpg
 Producto.REST
 Compra.REST
 Auth.REST
