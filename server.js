@@ -1,12 +1,12 @@
-/* import puppeteer from "puppeteer"; */
+/* import puppeteer from "puppeteer"; PODRIA HABER HECHO ESTO, pero finalmente google no le gusta el chrome automatizado, asi q tuve q descargar puppettear-extra y stealth*/
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { executablePath } from "puppeteer";
-
 puppeteer.use(StealthPlugin());
 import dotenv from "dotenv";
-import { mainDeezer, readJson } from "./deezer.js";
 dotenv.config();
+
+import { mainDeezer, readJson } from "./deezer.js";
 
 const EMAIL = process.env.EMAIL;
 const PASSWORD = process.env.PWD;
