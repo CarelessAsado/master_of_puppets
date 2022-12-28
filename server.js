@@ -24,12 +24,12 @@ const songsData = readJson();
     return;
   }
   await loginGoogle(page);
-  /* 
+
   for (const query of songsData) {
     await later(page, query);
-  }  */
+  }
 
-  await test(page);
+  /*   await test(page); */
   await page.screenshot({ path: "bla.jpg" });
 })();
 
